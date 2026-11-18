@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تسجيل الدخول | لوحة تحكم Zalabia & Donuts</title>
+<meta name="theme-color" content="#9c0a43">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍩</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#dc1a5c;--dk:#9c0a43;--dk2:#6f0731;--y:#ffd51f;--y2:#ffe980;--tx:#fff;--mut:#ffd3e2;--ok:#25d366;--danger:#ff4d6d;--line:#ffffff33;--r:18px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 100% 0,#b30f4c 0 170px,transparent 171px),radial-gradient(circle at 0 100%,#c4135a 0 150px,transparent 151px)}
+button,input{font-family:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.auth-card{background:var(--dk);border:2px solid var(--y);border-radius:24px;padding:30px 24px;width:100%;max-width:400px;box-shadow:0 15px 35px #6f073188;text-align:center}
+.auth-card h2{font-family:'Lalezar',sans-serif;font-size:36px;color:var(--y);margin-bottom:6px;direction:ltr}
+.auth-card p{color:var(--mut);font-size:14px;margin-bottom:20px}
+
+.topbar{background:var(--dk);border-bottom:3px solid var(--y);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 6px 20px #6f073166}
+.topbar h1{font-family:'Lalezar',sans-serif;font-weight:400;font-size:28px;color:var(--y);text-shadow:2px 2px 0 var(--dk2);direction:ltr}
+.acts-top{display:flex;align-items:center;gap:10px}
+.badge{background:var(--dk2);border:1.5px solid var(--y);color:var(--y);padding:3px 14px;border-radius:99px;font-size:13px;font-weight:700}
+.btn-logout{background:#ff4d6d22;color:#ff8fa3;border:1px solid #ff4d6d;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700}
+
+.container{max-width:1040px;margin:22px auto;padding:0 14px;display:grid;grid-template-columns:1fr;gap:20px;width:100%}
+@media(min-width:820px){.container{grid-template-columns:360px 1fr}}
+
+.card{background:var(--dk);border:2px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:0 10px 25px #6f073144;height:fit-content}
+.card-title{font-size:18px;font-weight:900;color:var(--y);margin-bottom:14px;padding-bottom:8px;border-bottom:1.5px dashed var(--line);display:flex;justify-content:space-between;align-items:center}
+
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:4px}
+.inp{width:100%;background:var(--dk2);border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;font-size:14px;color:var(--tx)}
+.inp:focus{outline:none;border-color:var(--y)}
+select.inp option{background:var(--dk2)}
+
+.opt-row{display:grid;grid-template-columns:1fr 90px 32px;gap:6px;margin-bottom:6px;align-items:center}
+.btn-add-opt{font-size:12px;color:var(--y);font-weight:700;text-decoration:underline;margin-bottom:12px;display:inline-block}
+.btn-rm-opt{background:#ff4d6d33;color:#ff8fa3;border-radius:8px;height:34px;font-weight:900}
+
+.btn-y{width:100%;background:var(--y);color:var(--dk2);font-weight:900;font-size:15px;padding:11px;border-radius:12px;box-shadow:0 4px 0 #b89500}
+.btn-y:active{transform:translateY(2px);box-shadow:none}
+
+.seed-box{background:var(--dk2);border:1.5px dashed var(--y);border-radius:14px;padding:14px;text-align:center;margin-bottom:16px}
+.seed-box p{font-size:13px;color:var(--mut);margin-bottom:10px}
+
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none}
+.tab{flex:none;padding:5px 14px;border-radius:99px;background:var(--dk2);border:1px solid var(--line);font-size:13px;font-weight:700}
+.tab.on{background:var(--y);color:var(--dk2);border-color:var(--y)}
+
+.item-row{background:var(--dk2);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.item-row.off{opacity:.55;border-style:dashed}
+.item-row h3{font-size:16px;font-weight:700}
+.prices-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.p-badge{background:#ffffff18;border:1px solid #ffd51f55;color:var(--y);font-size:12px;padding:2px 8px;border-radius:8px;font-weight:700}
+
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.btn-s{padding:5px 10px;border-radius:9px;font-size:12px;font-weight:700}
+.b-edit{background:#ffffff20;color:var(--y);border:1px solid var(--y)}
+.b-tog{background:#25d36622;color:var(--ok);border:1px solid var(--ok)}
+.b-tog.no{background:#ffffff15;color:var(--mut);border-color:var(--line)}
+.b-del{background:#ff4d6d22;color:#ff8fa3;border:1px solid #ff4d6d}
+
+#main-app{display:none}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <h2>Zalabia &amp; Donuts</h2>
+    <p>ادخل بريد الإدارة وكلمة المرور للتحكم في المنيو</p>
+    <form id="login-form">
+      <div class="fg" style="text-align:right">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="login-email" class="inp" placeholder="admin@zalabia.com" required style="direction:ltr;text-align:right">
+      </div>
+      <div class="fg" style="text-align:right">
+        <label>كلمة المرور</label>
+        <input type="password" id="login-pass" class="inp" placeholder="••••••••" required style="direction:ltr;text-align:right">
+      </div>
+      <button type="submit" class="btn-y" style="margin-top:10px">تسجيل الدخول 🔓</button>
+      <p id="login-err" style="color:#ff8fa3;font-size:13px;margin-top:10px"></p>
+    </form>
+  </div>
+</div>
+
+<div id="main-app">
+  <header class="topbar">
+    <h1>🍩 Zalabia & Donuts</h1>
+    <div class="acts-top">
+      <span class="badge">⚙️ لوحة الإدارة</span>
+      <button id="logout-btn" class="btn-logout">تسجيل خروج</button>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <div style="display:flex;flex-direction:column;gap:20px">
+      
+      <section class="card">
+        <h2 class="card-title">➕ إضافة صنف جديد</h2>
+        <form id="add-form">
+          <div class="fg">
+            <label>القسم</label>
+            <select id="cat" class="inp">
+              <option value="pan">🥞 ميني بان كيك</option>
+              <option value="waf">🧇 وافل</option>
+              <option value="zal">🧆 زلابيا</option>
+              <option value="don">🍩 دونتس</option>
+              <option value="cof">☕ كوفي كورنر</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>اسم الصنف</label>
+            <input type="text" id="name" class="inp" placeholder="مثال: نوتيلا، لوتس، كابتشينو" required>
+          </div>
+          <div class="fg">
+            <label>الأسعار والمقاسات (اترك المقاس فارغاً لو سعر واحد)</label>
+            <div id="opts-container">
+              <div class="opt-row">
+                <input type="text" class="inp opt-lbl" placeholder="المقاس (مثال: S أو 10 قطع)">
+                <input type="number" class="inp opt-prc" placeholder="السعر" required>
+                <span></span>
+              </div>
+            </div>
+            <button type="button" id="add-opt-btn" class="btn-add-opt">+ إضافة مقاس / حجم آخر</button>
+          </div>
+          <button type="submit" class="btn-y">حفظ ونشر في المنيو ✨</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">🛵 مناطق وأسعار التوصيل</h2>
+        <form id="zone-form" style="display:grid;grid-template-columns:1fr 80px 60px;gap:6px;margin-bottom:12px">
+          <input type="text" id="z-name" class="inp" placeholder="اسم المنطقة" required>
+          <input type="number" id="z-fee" class="inp" placeholder="السعر" required>
+          <button type="submit" class="btn-y" style="padding:8px">أضف</button>
+        </form>
+        <div id="zones-list"></div>
+      </section>
+
+    </div>
+
+    <section class="card">
+      <h2 class="card-title">
+        <span>📋 أصناف المنيو</span>
+        <span id="total-count" style="font-size:13px;color:var(--mut)"></span>
+      </h2>
+
+      <div id="seed-area" class="seed-box" style="display:none">
+        <p>قاعدة البيانات فارغة حالياً! اضغطي بالأسفل لرفع كل أصناف Zalabia & Donuts الحالية (51 صنف) تلقائياً.</p>
+        <button id="seed-btn" class="btn-y" style="max-width:280px">📥 استيراد المنيو الأساسي الآن</button>
+      </div>
+
+      <div class="tabs" id="filter-tabs">
+        <button class="tab on" data-c="all">الكل</button>
+        <button class="tab" data-c="pan">🥞 ميني بان كيك</button>
+        <button class="tab" data-c="waf">🧇 وافل</button>
+        <button class="tab" data-c="zal">🧆 زلابيا</button>
+        <button class="tab" data-c="don">🍩 دونتس</button>
+        <button class="tab" data-c="cof">☕ كوفي كورنر</button>
+      </div>
+
+      <div id="items-list">
+        <p style="text-align:center;color:var(--mut);padding:20px">جاري التحميل...</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBw7zW0PiGHU7VZevtIBa6HgWx0t8QERMQ",
+  authDomain: "experimental-d8628.firebaseapp.com",
+  projectId: "experimental-d8628",
+  storageBucket: "experimental-d8628.firebasestorage.app",
+  messagingSenderId: "709612171470",
+  appId: "1:709612171470:web:662ba57f2f302e0b27a09f",
+  measurementId: "G-K1644ZZPZW"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const authScreen = document.getElementById('auth-screen');
+const mainApp = document.getElementById('main-app');
+const loginForm = document.getElementById('login-form');
+const loginErr = document.getElementById('login-err');
+
+loginForm.onsubmit = async (e) => {
+  e.preventDefault();
+  loginErr.textContent = "جاري التحقق...";
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (err) {
+    loginErr.textContent = "خطأ في البريد أو كلمة المرور!";
+  }
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authScreen.style.display = 'none';
+    mainApp.style.display = 'block';
+  } else {
+    authScreen.style.display = 'flex';
+    mainApp.style.display = 'none';
+  }
+});
+
+document.getElementById('logout-btn').onclick = () => {
+  signOut(auth);
+};
+
+let allItems = [];
+let currentFilter = 'all';
+
+document.getElementById('add-opt-btn').onclick = () => {
+  const row = document.createElement('div');
+  row.className = 'opt-row';
+  row.innerHTML = `
+    <input type="text" class="inp opt-lbl" placeholder="المقاس (مثال: M)">
+    <input type="number" class="inp opt-prc" placeholder="السعر" required>
+    <button type="button" class="btn-rm-opt" onclick="this.parentElement.remove()">✕</button>
+  `;
+  document.getElementById('opts-container').appendChild(row);
+};
+
+document.getElementById('add-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const c = document.getElementById('cat').value;
+  const n = document.getElementById('name').value.trim();
+  const rows = document.querySelectorAll('#opts-container .opt-row');
+  const options = [];
+  rows.forEach(r => {
+    const label = r.querySelector('.opt-lbl').value.trim();
+    const price = Number(r.querySelector('.opt-prc').value);
+    if (price > 0) options.push({ label, price });
+  });
+
+  if (!options.length) return alert("أدخل سعراً واحداً على الأقل");
+
+  await addDoc(collection(db, "zd_items"), {
+    c, n, options, available: true, createdAt: Date.now()
+  });
+
+  e.target.reset();
+  document.getElementById('opts-container').innerHTML = `
+    <div class="opt-row">
+      <input type="text" class="inp opt-lbl" placeholder="المقاس (مثال: S أو 10 قطع)">
+      <input type="number" class="inp opt-prc" placeholder="السعر" required>
+      <span></span>
+    </div>`;
+};
+
+onSnapshot(collection(db, "zd_items"), (snap) => {
+  allItems = [];
+  snap.forEach(d => allItems.push({ id: d.id, ...d.data() }));
+  document.getElementById('seed-area').style.display = allItems.length === 0 ? 'block' : 'none';
+  document.getElementById('total-count').textContent = `(${allItems.length} صنف)`;
+  renderList();
+});
+
+function renderList() {
+  const list = document.getElementById('items-list');
+  const filtered = currentFilter === 'all' ? allItems : allItems.filter(i => i.c === currentFilter);
+  
+  if (!filtered.length) {
+    list.innerHTML = `<p style="text-align:center;color:var(--mut);padding:20px">لا توجد أصناف في هذا القسم.</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(it => {
+    const isOk = it.available !== false;
+    const badges = (it.options || []).map(o => `<span class="p-badge">${o.label ? o.label + ': ' : ''}${o.price} ج</span>`).join('');
+    return `
+      <div class="item-row ${isOk ? '' : 'off'}">
+        <div>
+          <h3>${it.n}</h3>
+          <div class="prices-badges">${badges}</div>
+        </div>
+        <div class="acts">
+          <button class="btn-s b-edit" onclick="editPrices('${it.id}')">تعديل الأسعار</button>
+          <button class="btn-s b-tog ${isOk ? '' : 'no'}" onclick="toggleItem('${it.id}', ${isOk})">${isOk ? '✔ متوفر' : '✖ نفد'}</button>
+          <button class="btn-s b-del" onclick="delItem('${it.id}')">حذف</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.getElementById('filter-tabs').onclick = (e) => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  currentFilter = btn.dataset.c;
+  renderList();
+};
+
+window.editPrices = async (id) => {
+  const it = allItems.find(x => x.id === id);
+  if (!it) return;
+  const updatedOptions = [];
+  for (const opt of it.options) {
+    const title = opt.label ? `سعر (${it.n} - ${opt.label})` : `سعر (${it.n})`;
+    const val = prompt(title, opt.price);
+    if (val === null) return;
+    updatedOptions.push({ label: opt.label || '', price: Number(val) || opt.price });
+  }
+  await updateDoc(doc(db, "zd_items", id), { options: updatedOptions });
+};
+
+window.toggleItem = async (id, cur) => {
+  await updateDoc(doc(db, "zd_items", id), { available: !cur });
+};
+
+window.delItem = async (id) => {
+  if (confirm("حذف الصنف نهائياً؟")) await deleteDoc(doc(db, "zd_items", id));
+};
+
+document.getElementById('zone-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('z-name').value.trim();
+  const fee = Number(document.getElementById('z-fee').value);
+  await addDoc(collection(db, "zd_zones"), { name, fee });
+  e.target.reset();
+};
+
+onSnapshot(collection(db, "zd_zones"), (snap) => {
+  const zList = document.getElementById('zones-list');
+  zList.innerHTML = '';
+  snap.forEach(d => {
+    const z = d.data();
+    zList.innerHTML += `
+      <div class="item-row" style="padding:8px 12px;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:700">${z.name} <span class="p-badge">+${z.fee} ج</span></span>
+        <button class="btn-s b-del" onclick="delZone('${d.id}')">حذف</button>
+      </div>`;
+  });
+});
+
+window.delZone = async (id) => {
+  await deleteDoc(doc(db, "zd_zones", id));
+};
+
+document.getElementById('seed-btn').onclick = async () => {
+  const btn = document.getElementById('seed-btn');
+  btn.textContent = "جاري الرفع... انتظر ثواني ⏳";
+  btn.disabled = true;
+
+  const SZ=['S','M','L','XL'];
+  const initial = [];
+  const push = (c, n, opts) => initial.push({ c, n, options: opts.map(([label, price]) => ({ label, price })), available: true });
+
+  ['نوتيلا','شيكولاتة بيضاء','لوتس','كراميل','توت أزرق','فراولة','كيندر','دارك شوكليت','فريرو روشة'].forEach(n=>push('pan',n,[['10 قطع',50],['15 قطعة',70],['20 قطعة',90],['25 قطعة',100]]));
+  [['نوتيلا',45],['شيكولاتة بيضاء',45],['أوريو',50],['توت أزرق',50],['فراولة',45],['لوتس',45],['كراميل',50],['فريرو روشة',50],['كيندر',50],['رافايلو',50],['دارك شوكليت',50]].forEach(([n,p])=>push('waf',n,[['',p]]));
+  [['سكر',35,50,65,100],['عسل',35,50,65,100],['نوتيلا',40,60,90,140],['لوتس',40,60,90,140],['كراميل',50,80,120,180],['توت أزرق',50,60,120,180],['فراولة',35,50,80,120],['وايت شوكليت',40,60,90,140],['دارك شوكليت',40,60,100,150],['كيندر',50,80,120,180]].forEach(([n,...p])=>push('zal',n,SZ.map((s,i)=>[s,p[i]])));
+  [['نوتيلا',35,50],['شيكولاتة بيضاء',35,50],['لوتس',35,50],['كراميل',40,60],['توت أزرق',35,50],['فراولة',35,50],['فريرو روشة',40,60],['كيندر',40,60],['دارك شوكليت',40,60],['رافايلو',40,60]].forEach(([n,a,b])=>push('don',n,[['كلاسيك',a],['حشو داخلي',b]]));
+  [['قهوة تركي',25],['اسبريسو',40],['اسبريسو دابل',60],['كابتشينو',50],['هوت شوكليت',50],['كلاسيك ايس كوفي',50],['قهوة فرنساوي',40],['كارميل ايس كوفي',50],['دارك ايس كوفي',50],['ايس سبنش لاتية',100],['ايس موكا',90]].forEach(([n,p])=>push('cof',n,[['',p]]));
+
+  for (const item of initial) {
+    await addDoc(collection(db, "zd_items"), item);
+  }
+  alert("تم استيراد الـ 51 صنف بنجاح! 🎉");
+};
+</script>
+</body>
+</html>
