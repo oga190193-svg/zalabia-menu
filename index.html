@@ -223,7 +223,13 @@ function renderMenu(){
     if(!catItems.length) return '';
     return `<section class="sec" id="${c.id}"><h2 class="rb"><span>${c.en}</span></h2><div class="sub">${c.e} ${c.t}${c.s?' - '+c.s:''}</div><div class="grid">${catItems.map(card).join('')}</div></section>`;
   }).join('');
-  $('#chips').innerHTML=CATS.filter(c=>ITEMS.some(i=>i.c===c.id)).map((c,i)=>`<button class="chip${i?'':' on'}" data-go="${c.id}">${c.e} ${c.t}</button>`).join(''); ITEMS.filter(one).forEach(refreshAct); document.querySelectorAll('.sec').forEach(s=>io.observe(s)); }  function refreshAct(it){ const el=document.querySelector(`[data-act="${it.id}"]`);if(!el)return;
+  $('#chips').innerHTML=CATS.filter(c=>ITEMS.some(i=>i.c===c.id)).map((c,i)=>`<button class="chip${i?'':' on'}" data-go="${c.id}">${c.e} ${c.t}</button>`).join(''); 
+  ITEMS.filter(one).forEach(refreshAct); 
+  document.querySelectorAll('.sec').forEach(s=>io.observe(s)); 
+}
+
+function refreshAct(it){ 
+  const el=document.querySelector(`[data-act="${it.id}"]`);if(!el)return;
   const q=(cart[it.id]||{}).q||0;
   el.innerHTML=q?`<div class="qty"><button data-dec="${it.id}" aria-label="نقص">−</button><b>${q}</b><button data-inc="${it.id}" aria-label="زيادة">+</button></div>`:`<button class="add" data-add="${it.id}">+ أضف</button>`;
 }
@@ -232,7 +238,11 @@ function add(id,i){
   const it=ITEMS.find(x=>x.id===id);if(!it || it.available===false)return;
   const o=it.o[i],c=CATS.find(x=>x.id===it.c);
   const key=one(it)?id:id+'_'+i;
-  const name=`${c.t}${it.n}${o[0]?` (${o[0]})`:''}`; (cart[key]=cart[key]\vert{}\vert{}{n:name,p:o[1],q:0,id}).q++; after(id);toast(`✅ تمت إضافة ${name}`);
+  const name=`${c.t}${it.n}${o[0]?` (${o[0]})`:''}`; 
+  if(!cart[key]) cart[key]={n:name,p:o[1],q:0,id};
+  cart[key].q++; 
+  after(id);
+  toast(`✅ تمت إضافة ${name}`);
 }
 
 function chg(key,d){
@@ -256,7 +266,47 @@ function paint(){
   $('#tot').textContent=money(grandTotal());
   $('#bar').classList.toggle('show',n>0&&!$('#sheet').classList.contains('show'));
   const ks=Object.keys(cart);
-  $('#lines').innerHTML=ks.length?ks.map(k=>{const l=cart[k];return `<div class="ln"><div class="n">${esc(l.n)}<small>${l.p} جنيه للواحد</small></div><div class="qty"><button data-dec="${k}">−</button><b>${l.q}</b><button data-inc="${k}">+</button></div><div class="t">${money(l.p*l.q)}</div></div>`}).join(''):'<div class="noc">🛒 السلة فاضية، اختار من المنيو</div>'; $('#form').style.display=$('.sf').style.display=ks.length?'':'none'; if(!ks.length&&$('#sheet').classList.contains('show'))setTimeout(()=>openSheet(false),0); }  function openSheet(o){ $('#sheet').classList.toggle('show',o);$('#ov').classList.toggle('show',o); document.body.style.overflow=o?'hidden':''; if(!o)paint();else $('#bar').classList.remove('show'); }  try{const f=JSON.parse(localStorage.getItem(KEYF)\vert{}\vert{}'{}');['nm','ph','ad','zn'].forEach(i=>{if(f[i])$('#'+i).value=f[i]});if(f.m)mode=f.m}catch(e){}  function syncMode(){ document.querySelectorAll('.mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); $('#adW').style.display=$('#znW').style.display=mode==='توصيل'?'':'none'; paint(); } function saveForm(){try{localStorage.setItem(KEYF,JSON.stringify({nm:$('#nm').value,ph:$('#ph').value,ad:$('#ad').value,zn:$('#zn').value,m:mode}))}catch(e){}}  function send(){ if(!count())return null; const nm=$('#nm').value.trim(),ph=$('#ph').value.trim(),ad=$('#ad').value.trim(),nt=$('#nt').value.trim(),z=getZone(); let bad=false; [['nm',!nm],['zn',mode==='توصيل'&&!z.id],['ad',mode==='توصيل'&&!ad]].forEach(([i,b])=>{$('#'+i).classList.toggle('bad',b);if(b)bad=true}); if(bad){toast('⚠️ من فضلك أكمل البيانات المطلوبة');return null} if(ph&&!/^[0-9+\u0660-\u0669\s-]{8,16}$/.test(ph)){$('#ph').classList.add('bad');toast('⚠️ رقم الموبايل غير صحيح');return null} saveForm(); const lines=Object.values(cart).map((l,i)=>`${i+1}) ${l.n} ×${l.q} = ${l.p*l.q} جنيه`).join('\n'); const locLine=mode==='توصيل'?`\n🗺️ المنطقة: ${z.name}\n📍 العنوان: ${ad}`:''; const modeIcon=mode==='توصيل'?'🛵':'🏪'; const feeText=mode==='توصيل'?`\n📦 قيمة الطلبات: ${subTotal()} جنيه\n🛵 خدمة التوصيل (${z.name}):${z.fee} جنيه`:'';
+  $('#lines').innerHTML=ks.length?ks.map(k=>{const l=cart[k];return `<div class="ln"><div class="n">${esc(l.n)}<small>${l.p} جنيه للواحد</small></div><div class="qty"><button data-dec="${k}">−</button><b>${l.q}</b><button data-inc="${k}">+</button></div><div class="t">${money(l.p*l.q)}</div></div>`}).join(''):'<div class="noc">🛒 السلة فاضية، اختار من المنيو</div>'; 
+  $('#form').style.display=$('.sf').style.display=ks.length?'':'none'; 
+  if(!ks.length&&$('#sheet').classList.contains('show'))setTimeout(()=>openSheet(false),0); 
+}
+
+function openSheet(o){ 
+  $('#sheet').classList.toggle('show',o);$('#ov').classList.toggle('show',o); 
+  document.body.style.overflow=o?'hidden':''; 
+  if(!o)paint();else $('#bar').classList.remove('show'); 
+}
+
+try{
+  const f=JSON.parse(localStorage.getItem(KEYF)||'{}');
+  ['nm','ph','ad','zn'].forEach(i=>{if(f[i])$('#'+i).value=f[i]});
+  if(f.m)mode=f.m;
+}catch(e){}
+
+function syncMode(){ 
+  document.querySelectorAll('.mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode)); 
+  $('#adW').style.display=$('#znW').style.display=mode==='توصيل'?'':'none'; 
+  paint(); 
+}
+
+function saveForm(){
+  try{
+    localStorage.setItem(KEYF,JSON.stringify({nm:$('#nm').value,ph:$('#ph').value,ad:$('#ad').value,zn:$('#zn').value,m:mode}))
+  }catch(e){}
+}
+
+function send(){ 
+  if(!count())return null; 
+  const nm=$('#nm').value.trim(),ph=$('#ph').value.trim(),ad=$('#ad').value.trim(),nt=$('#nt').value.trim(),z=getZone(); 
+  let bad=false; 
+  [['nm',!nm],['zn',mode==='توصيل'&&!z.id],['ad',mode==='توصيل'&&!ad]].forEach(([i,b])=>{$('#'+i).classList.toggle('bad',b);if(b)bad=true}); 
+  if(bad){toast('⚠️ من فضلك أكمل البيانات المطلوبة');return null} 
+  if(ph&&!/^[0-9+\u0660-\u0669\s-]{8,16}$/.test(ph)){$('#ph').classList.add('bad');toast('⚠️ رقم الموبايل غير صحيح');return null} 
+  saveForm(); 
+  const lines=Object.values(cart).map((l,i)=>`${i+1}) ${l.n} ×${l.q} = ${l.p*l.q} جنيه`).join('\n'); 
+  const locLine=mode==='توصيل'?`\n🗺️ المنطقة: ${z.name}\n📍 العنوان: ${ad}`:''; 
+  const modeIcon=mode==='توصيل'?'🛵':'🏪'; 
+  const feeText=mode==='توصيل'?`\n📦 قيمة الطلبات: ${subTotal()} جنيه\n🛵 خدمة التوصيل (${z.name}):${z.fee} جنيه`:'';
   const msg=`🍩 *طلب جديد - ${SHOP}*\n━━━━━━━━━━━━\n${lines}\n━━━━━━━━━━━━${feeText}\n💰 *الإجمالي المطلوب: ${grandTotal()} جنيه*\n\n👤 الاسم: ${nm}${ph?`\n📞 الموبايل: ${ph}`:''}\n${modeIcon} نوع الطلب: ${mode}${locLine}${nt?`\n📝 ملاحظات: ${nt}`:''}`;
   try{localStorage.setItem(KEYP,JSON.stringify({cart,t:Date.now()}))}catch(e){}
   return `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
@@ -269,7 +319,10 @@ document.addEventListener('click',e=>{
   else if(d.inc)chg(d.inc,1);
   else if(d.dec)chg(d.dec,-1);
   else if(d.undo!==undefined)undo();
-  else if(d.go){const el=document.getElementById(d.go),h=$('.sticky').offsetHeight,ins=parseFloat(getComputedStyle(document.documentElement).paddingTop)||0;window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-h-ins-8,behavior:'auto'})}
+  else if(d.go){
+    const el=document.getElementById(d.go),h=$('.sticky').offsetHeight,ins=parseFloat(getComputedStyle(document.documentElement).paddingTop)||0;
+    window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-h-ins-8,behavior:'auto'})
+  }
   else if(d.m){mode=d.m;syncMode();saveForm()}
 });
 
@@ -293,7 +346,14 @@ const io=new IntersectionObserver(es=>es.forEach(en=>{
   if(en.isIntersecting)document.querySelectorAll('.chip').forEach(c=>{const on=c.dataset.go===en.target.id;c.classList.toggle('on',on);if(on){const bx=$('#chips'),cr=c.getBoundingClientRect(),br=bx.getBoundingClientRect();bx.scrollLeft+=(cr.left+cr.width/2)-(br.left+br.width/2)}})
 }),{rootMargin:'-140px 0px -65% 0px'});
 
-let tt;function toast(m,ms=1800,html){const t=$('#toast');if(html)t.innerHTML=m;else t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),ms)}
+let tt;
+function toast(m,ms=1800,html){
+  const t=$('#toast');
+  if(html)t.innerHTML=m;else t.textContent=m;
+  t.classList.add('show');
+  clearTimeout(tt);
+  tt=setTimeout(()=>t.classList.remove('show'),ms);
+}
 
 onSnapshot(collection(db, "zd_items"), (snap) => {
   if (snap.empty) {
@@ -329,7 +389,9 @@ onSnapshot(collection(db, "zd_zones"), (snap) => {
   }
 });
 
-syncMode();paint();
+syncMode();
+paint();
+
 let backup=null;
 function finalize(){
   let p=null;try{p=JSON.parse(localStorage.getItem(KEYP)||'null')}catch(e){}
